@@ -1,34 +1,18 @@
-// backend/models/index.js
-const { Sequelize } = require('sequelize');
-const path = require('path');
-const fs = require('fs');
+/// backend/models/index.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const sequelize = require('../config/database'); // Importa tu conexión configurada
+const Product  = require('./Product')(sequelize, DataTypes);
+const Supplier = require('./Supplier')(sequelize, DataTypes);
 
-const db = {};
+const db = { sequelize, Product, Supplier };
 
-// Cargar todos los modelos automáticamente
-fs.readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file !== 'index.js' &&
-      file.slice(-3) === '.js' &&
-      !file.startsWith('.')
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+// Lado Supplier -> Product (si el modelo la define)
+if (Supplier.associate) Supplier.associate(db);
+// (Opcional) si algún otro modelo define associate, se invoca igual.
+// if (Product.associate) Product.associate(db);
 
-// Configurar relaciones
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+// Lado Product -> Supplier (aseguramos la inversa)
+Product.belongsTo(Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
 
 module.exports = db;

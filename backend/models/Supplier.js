@@ -1,12 +1,21 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+// backend/models/Supplier.js
+module.exports = (sequelize, DataTypes) => {
+  const Supplier = sequelize.define('Supplier', {
+    name:    { type: DataTypes.STRING, allowNull: false },
+    contact: { type: DataTypes.STRING },
+    address: { type: DataTypes.TEXT }
+  }, {
+    tableName: 'suppliers',
+    underscored: true,
+    timestamps: true
+  });
 
-const Supplier = sequelize.define('Supplier', {
-  name: { type: DataTypes.STRING, allowNull: false },
-  contact: { type: DataTypes.STRING },
-  address: { type: DataTypes.TEXT }
-});
+  Supplier.associate = (models) => {
+    Supplier.hasMany(models.Product, {
+      foreignKey: 'supplier_id',
+      as: 'products'
+    });
+  };
 
-// Relación: Un proveedor tiene muchos productos
-Supplier.hasMany(require('./Product'));
-module.exports = Supplier;
+  return Supplier;
+};
