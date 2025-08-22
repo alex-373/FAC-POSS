@@ -1,18 +1,38 @@
-/// backend/models/index.js
+// backend/models/index.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Product  = require('./Product')(sequelize, DataTypes);
+// Importa los modelos. Es una buena práctica usar un solo formato de importación.
+// Se asume que estos archivos solo exportan la función de definición.
+const Product = require('./Product')(sequelize, DataTypes);
 const Supplier = require('./Supplier')(sequelize, DataTypes);
+const Customer = require('./Customer')(sequelize, DataTypes);
+const Sale = require('./Sale')(sequelize, DataTypes);
+const SaleDetail = require('./SaleDetail')(sequelize, DataTypes);
 
-const db = { sequelize, Product, Supplier };
+// Crea un objeto para mantener todos los modelos y la conexión
+const db = {};
+db.sequelize = sequelize;
+db.Product = Product;
+db.Supplier = Supplier;
+db.Customer = Customer;
+db.Sale = Sale;
+db.SaleDetail = SaleDetail;
 
-// Lado Supplier -> Product (si el modelo la define)
-if (Supplier.associate) Supplier.associate(db);
-// (Opcional) si algún otro modelo define associate, se invoca igual.
-// if (Product.associate) Product.associate(db);
+// Definir las asociaciones aquí, después de que todos los modelos han sido importados
+// Un cliente puede tener muchas ventas
+db.Customer.hasMany(db.Sale, { foreignKey: "customerId" });
+db.Sale.belongsTo(db.Customer, { foreignKey: "customerId" });
+
+// Una venta tiene muchos detalles
+db.Sale.hasMany(db.SaleDetail, { foreignKey: "saleId" });
+db.SaleDetail.belongsTo(db.Sale, { foreignKey: "saleId" });
+
+// Un producto puede estar en muchos detalles
+db.Product.hasMany(db.SaleDetail, { foreignKey: "productId" });
+db.SaleDetail.belongsTo(db.Product, { foreignKey: "productId" });
 
 // Lado Product -> Supplier (aseguramos la inversa)
-Product.belongsTo(Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
+db.Product.belongsTo(db.Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
 
 module.exports = db;

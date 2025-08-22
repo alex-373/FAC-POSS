@@ -3,12 +3,18 @@ require('dotenv').config();
 const express = require('express');
 const sequelize = require('../config/database');
 const productRoutes = require('../routes/productRoutes'); // Ruta corregida
+const customerRoutes = require('../routes/customerRoutes');
+const salesRoutes = require("../routes/salesRoutes");
+
 
 const app = express();
 app.use(express.json());
 
 // Rutas
 app.use('/api/products', productRoutes);
+app.use('/api/customers', customerRoutes);
+app.use("/api/sales", salesRoutes);
+ 
 
 // Inicio
 sequelize.sync().then(() => {
