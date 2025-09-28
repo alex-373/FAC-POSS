@@ -9,6 +9,7 @@ const Supplier = require('./Supplier')(sequelize, DataTypes);
 const Customer = require('./Customer')(sequelize, DataTypes);
 const Sale = require('./Sale')(sequelize, DataTypes);
 const SaleDetail = require('./SaleDetail')(sequelize, DataTypes);
+const Payment = require("./Payment")(sequelize, DataTypes);
 
 // Crea un objeto para mantener todos los modelos y la conexión
 const db = {};
@@ -34,5 +35,17 @@ db.SaleDetail.belongsTo(db.Product, { foreignKey: "productId" });
 
 // Lado Product -> Supplier (aseguramos la inversa)
 db.Product.belongsTo(db.Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
+
+
+// Relaciones
+Sale.belongsTo(Customer, { foreignKey: "customerId" });
+Sale.hasMany(SaleDetail, { foreignKey: "saleId" });
+Sale.hasMany(Payment, { foreignKey: "saleId" });
+
+SaleDetail.belongsTo(Sale, { foreignKey: "saleId" });
+SaleDetail.belongsTo(Product, { foreignKey: "productId" });
+
+Payment.belongsTo(Sale, { foreignKey: "saleId" });
+
 
 module.exports = db;

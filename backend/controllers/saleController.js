@@ -1,13 +1,15 @@
 // controllers/saleController.js
 const { Sale, SaleDetail, Product } = require("../models");
 
+
 const createSale = async (req, res) => {
-  const { customerId, date, products } = req.body;
+  const { customer_id, date, products } = req.body;
+  
 
   try {
     // Crear la venta
-    const sale = await Sale.create({ customerId, date, total: 0 });
-    let total = 0;
+    const sale = await Sale.create({ customer_id, date, total: 0 });
+   let total = 0;
 
     // Procesar productos
     for (let item of products) {

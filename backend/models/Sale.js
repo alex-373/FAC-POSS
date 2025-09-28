@@ -6,18 +6,37 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    customerId: {
-      type: DataTypes.INTEGER,
+    customer_id: {
+    type: DataTypes.INTEGER,
+  references: {
+    model: "customers",
+    key: "id"
+    },
+    },
+    status: {
+      type: DataTypes.ENUM("borrador", "confirmada", "anulada"),
+      defaultValue: "borrador"
+    },
+    type: {
+      type: DataTypes.ENUM("contado", "credito"),
       allowNull: false,
-      references: {
-        model: "customers",  // 👈 tabla de clientes
-        key: "id"            // 👈 campo con el que se relaciona
-      },
-      field: "customer_id"   // 👈 así se guarda en BD (más estándar en SQL)
+      defaultValue: "contado"
+    },
+    discount: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
+    subtotal: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
+    taxes: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
     },
     total: {
       type: DataTypes.FLOAT,
-      allowNull: false
+      defaultValue: 0
     },
     date: {
       type: DataTypes.DATE,
@@ -27,14 +46,6 @@ module.exports = (sequelize, DataTypes) => {
     tableName: "sales",
     timestamps: true
   });
-
-  // Relaciones
-  Sale.associate = (models) => {
-    Sale.belongsTo(models.Customer, {
-      foreignKey: "customerId",
-      as: "customer"
-    });
-  };
 
   return Sale;
 };

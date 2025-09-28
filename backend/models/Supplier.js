@@ -1,21 +1,39 @@
-// backend/models/Supplier.js
+// backend/models/SaleDetail.js
 module.exports = (sequelize, DataTypes) => {
-  const Supplier = sequelize.define('Supplier', {
-    name:    { type: DataTypes.STRING, allowNull: false },
-    contact: { type: DataTypes.STRING },
-    address: { type: DataTypes.TEXT }
+  const SaleDetail = sequelize.define("SaleDetail", {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    saleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    productId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    price: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    },
+    discount: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
+    subtotal: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    }
   }, {
-    tableName: 'suppliers',
-    underscored: true,
+    tableName: "sale_details",
     timestamps: true
   });
 
-  Supplier.associate = (models) => {
-    Supplier.hasMany(models.Product, {
-      foreignKey: 'supplier_id',
-      as: 'products'
-    });
-  };
-
-  return Supplier;
+  return SaleDetail;
 };

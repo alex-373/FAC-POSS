@@ -6,9 +6,9 @@ const saleController = require("../controllers/saleController");
 
 // Ejemplo: registrar una venta
 router.post("/", (req, res) => {
-  const { customerId, total, date } = req.body;
+  const { customer_id, total, date } = req.body;
 
-  if (!customerId || !total) {
+  if (!customer_id || !total) {
     return res.status(400).json({ error: "Faltan datos de la venta" });
   }
 
@@ -23,10 +23,10 @@ router.get("/", (req, res) => {
   res.json({ message: "📦 Aquí se listarían todas las ventas" });
 });
 // Ruta para crear una venta (POST)
-router.post('/sales', saleController.createSale);
+router.post('/', saleController.createSale);
 
 // Ruta para obtener todas las ventas (GET)
-router.get('/sales', saleController.getAllSales); // <-- ¡Asegúrate de que esta línea exista!
+router.get('/', saleController.getAllSales); // <-- ¡Asegúrate de que esta línea exista!
 
 
 module.exports = router;
