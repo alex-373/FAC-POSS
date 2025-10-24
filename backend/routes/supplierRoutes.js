@@ -1,10 +1,19 @@
-    // backend/routes/supplierRoutes.js
-    const express = require('express');
-    const router = express.Router();
-    const supplierController = require('../controllers/supplierController');
+// backend/routes/supplierRoutes.js
+import { Router } from "express";
+import {
+  listSuppliers,
+  getSupplierById,
+  createSupplier,
+  updateSupplier,
+  deleteSupplier,
+} from "../controllers/supplierController.js";
 
-    // Ruta POST
-    router.post('/', supplierController.createSupplier);
+const router = Router();
 
-    module.exports = router;
-    
+router.get("/", listSuppliers);
+router.get("/:id", getSupplierById);
+router.post("/", createSupplier);
+router.put("/:id", updateSupplier);
+router.delete("/:id", deleteSupplier);
+
+export default router;

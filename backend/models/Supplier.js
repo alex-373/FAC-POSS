@@ -1,39 +1,35 @@
-// backend/models/SaleDetail.js
-module.exports = (sequelize, DataTypes) => {
-  const SaleDetail = sequelize.define("SaleDetail", {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
-    },
-    saleId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    productId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    price: {
-      type: DataTypes.FLOAT,
-      allowNull: false
-    },
-    discount: {
-      type: DataTypes.FLOAT,
-      defaultValue: 0
-    },
-    subtotal: {
-      type: DataTypes.FLOAT,
-      allowNull: false
-    }
-  }, {
-    tableName: "sale_details",
-    timestamps: true
-  });
+// backend/models/Supplier.js
+import { DataTypes } from "sequelize";
 
-  return SaleDetail;
+export default (sequelize) => {
+  const Supplier = sequelize.define(
+    "Supplier",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      contact: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+      address: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      // created_at y updated_at los maneja Sequelize con timestamps + underscored
+    },
+    {
+      tableName: "suppliers",
+      timestamps: true,
+      underscored: true, // usa created_at y updated_at
+    }
+  );
+
+  return Supplier;
 };

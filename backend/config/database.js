@@ -1,5 +1,8 @@
-require('dotenv').config();
-const { Sequelize } = require('sequelize');
+// config/database.js
+import dotenv from "dotenv";
+import { Sequelize } from "sequelize";
+
+dotenv.config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -7,14 +10,20 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    dialect: 'postgres',
+    dialect: "postgres",
     port: process.env.DB_PORT,
-    logging: false
+    logging: false,
   }
 );
 
-sequelize.authenticate()
-  .then(() => console.log('✅ Conexión a PostgreSQL exitosa'))
-  .catch(err => console.error('❌ Error de conexión:', err));
+// Función para probar la conexión (opcional, la llamas desde app.js)
+export const testConnection = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Conexión a PostgreSQL exitosa");
+  } catch (err) {
+    console.error("Error de conexión:", err);
+  }
+};
 
-module.exports = sequelize;
+export default sequelize;

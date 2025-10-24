@@ -1,10 +1,22 @@
 {
+  "name": "poss-fac-registro-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "node app/app.js",
+    "start": "node app/app.js"
+  },
   "dependencies": {
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "mysql2": "^3.14.3",
-    "pg": "^8.16.3",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.9",
+    "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.3"
   }
 }

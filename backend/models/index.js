@@ -1,51 +1,99 @@
 // backend/models/index.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import sequelize from "../config/database.js";
 
-// Importa los modelos. Es una buena práctica usar un solo formato de importación.
-// Se asume que estos archivos solo exportan la función de definición.
-const Product = require('./Product')(sequelize, DataTypes);
-const Supplier = require('./Supplier')(sequelize, DataTypes);
-const Customer = require('./Customer')(sequelize, DataTypes);
-const Sale = require('./Sale')(sequelize, DataTypes);
-const SaleDetail = require('./SaleDetail')(sequelize, DataTypes);
-const Payment = require("./Payment")(sequelize, DataTypes);
+// Importa cada modelo
+import ProductModel from "./Product.js";
+import SupplierModel from "./Supplier.js";
+import CustomerModel from "./Customer.js";
+import SaleModel from "./Sale.js";
+import SaleDetailModel from "./SaleDetail.js";
+import PaymentModel from "./Payment.js";
+import UserModel from "./User.js"; // ✅ NUEVO
 
-// Crea un objeto para mantener todos los modelos y la conexión
-const db = {};
-db.sequelize = sequelize;
-db.Product = Product;
-db.Supplier = Supplier;
-db.Customer = Customer;
-db.Sale = Sale;
-db.SaleDetail = SaleDetail;
+// Instancia los modelos
+const Product = ProductModel(sequelize);
+const Supplier = SupplierModel(sequelize);
+const Customer = CustomerModel(sequelize);
+const Sale = SaleModel(sequelize);
+const SaleDetail = SaleDetailModel(sequelize);
+const Payment = PaymentModel(sequelize);
+const User = UserModel(sequelize); // ✅ NUEVO
 
-// Definir las asociaciones aquí, después de que todos los modelos han sido importados
-// Un cliente puede tener muchas ventas
-db.Customer.hasMany(db.Sale, { foreignKey: "customerId" });
-db.Sale.belongsTo(db.Customer, { foreignKey: "customerId" });
+// Asociaciones existentes...
+Customer.hasMany(Sale, {
+  foreignKey: { name: "customerId", allowNull: false },
+  as: "sales",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+Sale.belongsTo(Customer, {
+  foreignKey: { name: "customerId", allowNull: false },
+  as: "customer",
+});
 
-// Una venta tiene muchos detalles
-db.Sale.hasMany(db.SaleDetail, { foreignKey: "saleId" });
-db.SaleDetail.belongsTo(db.Sale, { foreignKey: "saleId" });
+Sale.hasMany(SaleDetail, {
+  foreignKey: { name: "saleId", allowNull: false },
+  as: "details",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+SaleDetail.belongsTo(Sale, {
+  foreignKey: { name: "saleId", allowNull: false },
+  as: "sale",
+});
 
-// Un producto puede estar en muchos detalles
-db.Product.hasMany(db.SaleDetail, { foreignKey: "productId" });
-db.SaleDetail.belongsTo(db.Product, { foreignKey: "productId" });
+Product.hasMany(SaleDetail, {
+  foreignKey: { name: "productId", allowNull: false },
+  as: "saleDetails",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+SaleDetail.belongsTo(Product, {
+  foreignKey: { name: "productId", allowNull: false },
+  as: "product",
+});
 
-// Lado Product -> Supplier (aseguramos la inversa)
-db.Product.belongsTo(db.Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
+Supplier.hasMany(Product, {
+  foreignKey: { name: "supplier_id", allowNull: false },
+  as: "products",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+Product.belongsTo(Supplier, {
+  foreignKey: { name: "supplier_id", allowNull: false },
+  as: "supplier",
+});
 
+Sale.hasMany(Payment, {
+  foreignKey: { name: "saleId", allowNull: false },
+  as: "payments",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Payment.belongsTo(Sale, {
+  foreignKey: { name: "saleId", allowNull: false },
+  as: "sale",
+});
 
-// Relaciones
-Sale.belongsTo(Customer, { foreignKey: "customerId" });
-Sale.hasMany(SaleDetail, { foreignKey: "saleId" });
-Sale.hasMany(Payment, { foreignKey: "saleId" });
+// Exportaciones
+export {
+  sequelize,
+  Product,
+  Supplier,
+  Customer,
+  Sale,
+  SaleDetail,
+  Payment,
+  User, // ✅ NUEVO
+};
 
-SaleDetail.belongsTo(Sale, { foreignKey: "saleId" });
-SaleDetail.belongsTo(Product, { foreignKey: "productId" });
-
-Payment.belongsTo(Sale, { foreignKey: "saleId" });
-
-
-module.exports = db;
+export default {
+  sequelize,
+  Product,
+  Supplier,
+  Customer,
+  Sale,
+  SaleDetail,
+  Payment,
+  User, // ✅ NUEVO
+};

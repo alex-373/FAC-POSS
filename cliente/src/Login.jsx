@@ -1,158 +1,142 @@
-// src/components/Login.jsx
+// src/Login.jsx
 import React, { useState } from "react";
 import {
-  Avatar,
-  Button,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Link,
-  Paper,
-  Box,
-  Grid,
-  Typography,
-  CssBaseline,
+    Avatar,
+    Button,
+    TextField,
+    Link,
+    Paper,
+    Box,
+    Grid,
+    Typography,
+    CssBaseline,
+    Alert,
+    CircularProgress,
+    InputAdornment,
+    IconButton,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Login() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({ username: "", password: "" });
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-  // ✅ Estado para usuario y contraseña
-  const [account, setAccount] = useState({ username: "", password: "" });
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setError("");
+    };
 
-  // ✅ Manejar cambios de los inputs
-  const handleChange = (e) => {
-    setAccount({ ...account, [e.target.name]: e.target.value });
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
-  // ✅ Manejar el login
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (account.username === "admin" && account.password === "1234") {
-      navigate("/home"); // redirige al home
-    } else {
-      alert("Usuario o contraseña incorrectos");
-    }
-  };
+        try {
+            const response = await axios.post("http://localhost:3000/api/auth/login", formData);
 
-  return (
-    <Grid
-      container
-      component="main"
-      sx={{
-        height: "100vh",
-        background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <CssBaseline />
-      <Grid
-        item
-        xs={11}
-        sm={8}
-        md={4}
-        component={Paper}
-        elevation={6}
-        square
-        sx={{
-          p: 4,
-          borderRadius: 4,
-          background: "rgba(255, 255, 255, 0.15)",
-          backdropFilter: "blur(10px)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-          color: "#fff",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
+            if (response.data.success) {
+                localStorage.setItem("authToken", response.data.token);
+                localStorage.setItem("username", response.data.user.username);
+                navigate("/");
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || "Credenciales incorrectas");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Grid
+            container
+            component="main"
+            sx={{
+                height: "100vh",
+                background: 'url(/fondologin.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+            }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Iniciar Sesión
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Usuario"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              value={account.username}
-              onChange={handleChange}
-              sx={{
-                input: { color: "#fff" },
-                label: { color: "#fff" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "rgba(255,255,255,0.5)" },
-                  "&:hover fieldset": { borderColor: "#fff" },
-                  "&.Mui-focused fieldset": { borderColor: "#90caf9" },
-                },
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={account.password}
-              onChange={handleChange}
-              sx={{
-                input: { color: "#fff" },
-                label: { color: "#fff" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "rgba(255,255,255,0.5)" },
-                  "&:hover fieldset": { borderColor: "#fff" },
-                  "&.Mui-focused fieldset": { borderColor: "#90caf9" },
-                },
-              }}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Recordarme"
-              sx={{ color: "#fff" }}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{
-                mt: 3,
-                mb: 2,
-                background: "linear-gradient(45deg, #2196f3, #21cbf3)",
-                color: "#fff",
-                fontWeight: "bold",
-                borderRadius: 2,
-              }}
+            <CssBaseline />
+            <Grid
+                item
+                xs={9}
+                sm={5}
+                md={3}
+                lg={2}
+                component={Paper}
+                elevation={10}
+                sx={{
+                    p: 2,           // Padding reducido
+                    m: 'auto',
+                    borderRadius: 3,
+                    maxWidth: '450px'  // Ancho máximo fijo
+
+                }}
             >
-              Entrar
-            </Button>
-            <Grid container>
-              <Grid item>
-                <Link href="#" variant="body2" sx={{ color: "#90caf9" }}>
-                  {"¿No tienes cuenta? Regístrate"}
-                </Link>
-              </Grid>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Avatar sx={{ m: 1, bgcolor: "primary.main", width: 56, height: 56 }}>
+                        <LockOutlinedIcon fontSize="large" />
+                    </Avatar>
+                    <Typography component="h1" variant="h5" fontWeight="bold">
+                        Iniciar Sesión
+                    </Typography>
+
+                    {error && <Alert severity="error" sx={{ mt: 2, width: "100%" }}>{error}</Alert>}
+
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, width: "100%" }}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="Usuario"
+                            name="username"
+                            autoFocus
+                            value={formData.username}
+                            onChange={handleChange}
+                            disabled={loading}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="Contraseña"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            value={formData.password}
+                            onChange={handleChange}
+                            disabled={loading}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowPassword(!showPassword)}>
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                        <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, py: 1.5 }}>
+                            {loading ? <CircularProgress size={24} /> : "Entrar"}
+                        </Button>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <Link href="#" variant="body2">¿Olvidaste tu contraseña?</Link>
+                            </Grid>
+                            <Grid item xs={12} sm={6} textAlign={{ sm: "right" }}>
+                                <Link href="/signup" variant="body2">Crear cuenta</Link>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Box>
             </Grid>
-          </Box>
-        </Box>
-      </Grid>
-    </Grid>
-  );
+        </Grid>
+    );
 }
