@@ -45,7 +45,7 @@ app.use((req, res) => {
 
 // ✅ 7. INICIO DEL SERVIDOR
 sequelize.sync().then(() => {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 10000;
   app.listen(PORT, () => {
     console.log(`✅ Servidor: http://localhost:${PORT}`);
     console.log(`✅ BD: ${process.env.DB_NAME}`);
