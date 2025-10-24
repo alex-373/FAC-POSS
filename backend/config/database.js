@@ -1,20 +1,20 @@
 // config/database.js
-import dotenv from "dotenv";
+
 import { Sequelize } from "sequelize";
 
-dotenv.config();
+const connectionString = process.env.DATABASE_URL;
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    dialect: "postgres",
-    port: process.env.DB_PORT,
-    logging: false,
-  }
-);
+const sequelize = new Sequelize(connectionString, {
+  dialect: "postgres",
+  logging: false,
+  // Opciones adicionales para SSL/TLS, cruciales para bases de datos en la nube
+  dialectOptions: {
+    ssl: {
+      require: true, // Requerir SSL
+      rejectUnauthorized: false, // Ignorar error de certificado autofirmado (común en proveedores de nube)
+    },
+  },
+});
 
 // Función para probar la conexión (opcional, la llamas desde app.js)
 export const testConnection = async () => {
